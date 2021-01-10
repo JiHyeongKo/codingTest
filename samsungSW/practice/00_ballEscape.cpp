@@ -21,13 +21,13 @@ int bfs()
 	const int dx[] = { 0, 0, -1, 1 };	// 좌우
 
 	int visited[10][10][10][10] = { 0, };
-	queue<INFO> q;
+	queue<INFO> q;	// INFO형 큐 생성
 	q.push(start);
 	visited[start.ry][start.rx][start.by][start.bx] = 1;
 	
-	int ret = -1;
+	int returnValue = -1;	// 실패시 -1 반환
 
-	while (!q.empty())
+	while (!q.empty())	// q가 비어있지 않는 동안
 	{
 		INFO cur = q.front();
 		q.pop();
@@ -35,13 +35,13 @@ int bfs()
 		if (cur.count > 10)
 			break;
 
-		if (map[cur.ry][cur.rx] == 'O' && map[cur.by][cur.bx] != 'O')
+		if (map[cur.ry][cur.rx] == 'O' && map[cur.by][cur.bx] != 'O')	// red가 탈출할 시
 		{
-			ret = cur.count;
+			returnValue = cur.count;
 			break;
 		}
 
-		for (int dir = 0; dir < 4; dir++)
+		for (int dir = 0; dir < 4; dir++)	// 방향
 		{
 			int next_ry = cur.ry;
 			int next_rx = cur.rx;
@@ -50,15 +50,15 @@ int bfs()
 
 			while (1)
 			{
-				if (map[next_ry][next_rx] != '#' && map[next_ry][next_rx] != 'O')
+				if (map[next_ry][next_rx] != '#' && map[next_ry][next_rx] != 'O')	// 벽이거나 구멍이 아니면
 				{
-					next_ry += dy[dir], next_rx += dx[dir];
+					next_ry += dy[dir], next_rx += dx[dir];	// 방향대로 이동
 				}
 
 				else
 				{
-					if (map[next_ry][next_rx] == '#')
-						next_ry -= dy[dir], next_rx -= dx[dir];
+					if (map[next_ry][next_rx] == '#')	// 벽을 만나면
+						next_ry -= dy[dir], next_rx -= dx[dir];	// 한 칸 전으로 이동하고 종료
 
 					break;
 				}
@@ -78,14 +78,14 @@ int bfs()
 				}
 			}
 			
-			if (next_ry == next_by && next_rx == next_bx)
+			if (next_ry == next_by && next_rx == next_bx)	// red, blue가 같은 위치일 경우
 			{
-				if (map[next_ry][next_rx] != 'O')
+				if (map[next_ry][next_rx] != 'O')	// 탈출한 경우가 아니면
 				{
-					int red_dist = abs(next_ry - cur.ry) + abs(next_rx - cur.rx);
-					int blue_dist = abs(next_by - cur.by) + abs(next_bx - cur.bx);
+					int red_dist = abs(next_ry - cur.ry) + abs(next_rx - cur.rx);	// 이동거리
+					int blue_dist = abs(next_by - cur.by) + abs(next_bx - cur.bx);	// 이동거리
 
-					if (red_dist > blue_dist)
+					if (red_dist > blue_dist)	// 이동거리가 큰 게 멀리서 온 것 -> 한 칸 전으로 이동
 						next_ry -= dy[dir], next_rx -= dx[dir];
 
 					else
@@ -93,9 +93,9 @@ int bfs()
 				}
 			}
 
-			if (visited[next_ry][next_rx][next_by][next_bx] == 0)
+			if (visited[next_ry][next_rx][next_by][next_bx] == 0)	// 방문한 곳이 아니면
 			{
-				visited[next_ry][next_rx][next_by][next_bx] = 1;
+				visited[next_ry][next_rx][next_by][next_bx] = 1;	// 방문했다 하고.
 				INFO next;
 
 				next.ry = next_ry;
@@ -108,7 +108,7 @@ int bfs()
 		}
 	}
 
-	return ret;
+	return returnValue;
 }
 
 int main()
@@ -134,8 +134,8 @@ int main()
 	}
 	start.count = 0;
 
-	int ret = bfs();
-	printf("%d\n", ret);
+	int returnValue = bfs();
+	printf("%d\n", returnValue);
 
 	return 0;
 }
