@@ -1114,13 +1114,14 @@ int main()
 }
 */
 
+/*
 #include <iostream>
 using namespace std;
 // https://www.acmicpc.net/problem/9663
 
-bool dirOne[20];	/* 세로 */
-bool dirTwo[20];	/* 대각선 */
-bool dirThree[20];	/* 대각선 \ */ 
+bool dirOne[20];	// 세로 
+bool dirTwo[20];	// 대각선 
+bool dirThree[20];	// 대각선
 int cnt = 0;
 int n;
 
@@ -1155,5 +1156,390 @@ int main()
 	cout << cnt <<"\n";
 	return 0;
 }
+*/
 
+/*
+#include <iostream>
+using namespace std;
 // https://www.acmicpc.net/problem/1182
+int n, s, val[20];
+int cnt = 0;
+
+void func(int cur, int total)
+{
+	if (cur == n)
+	{
+		if(s == total)
+		cnt++;
+		
+		return;
+	}
+
+	func(cur+1, total);
+	func(cur+1, total + val[cur]);
+}
+
+int main()
+{
+	cin >> n >> s;
+	for(int i = 0; i<n; i++)
+		cin >> val[i];
+
+	func(0, 0);
+
+	if(s == 0) cnt--;
+	cout << cnt << "\n";
+
+	return 0;
+}
+*/
+
+/*
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+// https://www.acmicpc.net/problem/15683
+#define X first
+#define Y second
+
+int dx[4] = {1, 0, -1, 0};
+int dy[4] = {0, 1, 0, -1}; // 남쪽, 동쪽, 북쪽, 서쪽 순서
+int n, m;
+int board1[10][10];			  // 최초에 입력받은 board를 저장할 변수
+int board2[10][10];			  // 사각 지대의 개수를 세기 위해 사용할 변수
+vector<pair<int, int> > cctv; // cctv의 좌표를 저장할 변수
+
+bool OOB(int a, int b)
+{ // Out Of Bounds 확인
+	return a < 0 || a >= n || b < 0 || b >= m;
+}
+
+// (x,y)에서 dir 방향으로 진행하면서 벽을 만날 때 까지 지나치는 모든 빈칸을 7로 바꿔버림
+void upd(int x, int y, int dir)
+{
+	dir %= 4;
+	while (1)
+	{
+		x += dx[dir];
+		y += dy[dir];
+		if (OOB(x, y) || board2[x][y] == 6)
+			return; // 범위를 벗어났거나 벽을 만나면 함수를 탈출
+		if (board2[x][y] != 0)
+			continue;	  // 해당 칸이 빈칸이 아닐 경우(=cctv가 있을 경우) 넘어감
+		board2[x][y] = 7; // 빈칸을 7로 덮음
+	}
+}
+
+int main(void)
+{
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cin >> n >> m;
+	int mn = 0; // 사각 지대의 최소 크기 (=답)
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++)
+		{
+			cin >> board1[i][j];
+			if (board1[i][j] != 0 && board1[i][j] != 6)
+				cctv.push_back({i, j});
+			if (board1[i][j] == 0)
+				mn++;
+		}
+	}
+	// 1 << (2*cctv.size())는 4의 cctv.size()승을 의미.
+	for (int tmp = 0; tmp < (1 << (2 * cctv.size())); tmp++)
+	{ // tmp를 4진법으로 뒀을 때 각 자리수를 cctv의 방향으로 생각할 것이다.
+		for (int i = 0; i < n; i++)
+			for (int j = 0; j < m; j++)
+				board2[i][j] = board1[i][j];
+		int brute = tmp;
+		for (int i = 0; i < cctv.size(); i++)
+		{
+			int dir = brute % 4;
+			brute /= 4;
+			int x = cctv[i].X;
+			int y = cctv[i].Y; // tie(x, y) = cctv[i];로 쓰면 1줄로 줄일 수 있음
+			if (board1[x][y] == 1)
+			{
+				upd(x, y, dir);
+			}
+			else if (board1[x][y] == 2)
+			{
+				upd(x, y, dir);
+				upd(x, y, dir + 2);
+			}
+			else if (board1[x][y] == 3)
+			{
+				upd(x, y, dir);
+				upd(x, y, dir + 1);
+			}
+			else if (board1[x][y] == 4)
+			{
+				upd(x, y, dir);
+				upd(x, y, dir + 1);
+				upd(x, y, dir + 2);
+			}
+			else
+			{ // board1[x][y] == 5
+				upd(x, y, dir);
+				upd(x, y, dir + 1);
+				upd(x, y, dir + 2);
+				upd(x, y, dir + 3);
+			}
+		}
+		int val = 0;
+		for (int i = 0; i < n; i++)
+			for (int j = 0; j < m; j++)
+				val += (board2[i][j] == 0);
+		mn = min(mn, val);
+	}
+	cout << mn << "\n";
+}
+*/
+
+/*
+#include <iostream>
+#include <algorithm>
+using namespace std;
+// https://www.acmicpc.net/problem/18808
+
+int n, m, k;
+int note[42][42];
+int r, c;
+int paper[12][12];
+
+// paper를 90도 회전하는 함수
+void rotate()
+{
+	int temp[12][12];
+
+	for(int i = 0; i < r; i++)
+		for(int j = 0; j < c; j++)
+			temp[i][j] = paper[i][j];
+
+	for (int i = 0; i < c; i++)
+		for (int j = 0; j < r; j++)
+			paper[i][j] = temp[r-1 - j][i];
+
+	swap(r,c);
+}
+
+// note의 (x,y)에 모눈종이의 (0,0)이 올라가게 스티커를 붙일 수 있는지 판단하는 함수. 가능할 경우 note를 갱신한 후 true를 반환.
+bool pastable(int x, int y)
+{
+	for(int i = 0; i<r; i++)
+		for(int j = 0; j<c; j++)
+			{
+				if(note[x+i][y+j] && paper[i][j])
+					return 0;
+			}
+	
+	for(int i = 0; i < r; i++)
+		for(int j = 0; j < c; j++)
+			{
+				if(paper[i][j])
+					note[x+i][y+j] = 1;
+			}
+	
+	return 1;
+}
+
+int main(void)
+{
+	cin >> n >> m >> k;
+
+	while(k--)
+	{
+		cin >> r >> c;
+
+		for(int i = 0; i<r; i++)
+			for(int j = 0; j<c; j++)
+				cin >> paper[i][j];
+
+		for(int dir = 0; dir<4; dir++)
+		{
+			bool isPaste = 0;
+
+			for(int x = 0; x <= n-r; x++)
+			{
+				if(isPaste) break;
+
+				for(int y = 0; y <= m-c; y++)
+				{
+					if(pastable(x, y))
+					{
+						isPaste = 1;
+						break;
+					}
+				}
+			}
+
+			if(isPaste)
+				break;
+
+			rotate();
+		}
+	}
+
+	int cnt = 0;
+	for(int i = 0; i<n; i++)
+		for(int j = 0; j<m; j++)
+			cnt = cnt + note[i][j];
+
+	cout << cnt << "\n";
+
+	return 0;
+}
+*/
+
+/*
+#include <iostream>
+#include <algorithm>
+using namespace std;
+// https://www.acmicpc.net/problem/12100
+
+int n;
+int board[21][21];
+int boardClone[21][21];
+
+void rotate()
+{
+	int temp[21][21];
+
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < n; j++)
+			temp[i][j] = boardClone[i][j];
+
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < n; j++)
+			boardClone[i][j] = temp[n - 1 - j][i];
+}
+
+void tilt(int dir)
+{
+	while (dir--)
+		rotate();
+
+	for (int i = 0; i < n; i++)
+	{
+		int tilted[21] = {}; // boardClone[i]를 왼쪽으로 기울인 결과를 저장할 변수
+		int idx = 0;		 // tilted 배열에서 어디에 삽입해야 하는지 가리키는 변수
+
+		for (int j = 0; j < n; j++)
+		{
+			if (boardClone[i][j] == 0)
+				continue;
+
+			if (tilted[idx] == 0) // 삽입할 위치가 비어있을 경우
+				tilted[idx] = boardClone[i][j];
+
+			else if (tilted[idx] == boardClone[i][j]) // 같은 값을 갖는 블록이 충돌할 경우
+				tilted[idx++] *= 2;
+
+			else // 다른 값을 갖는 블록이 충돌
+				tilted[++idx] = boardClone[i][j];
+		}
+
+		for (int j = 0; j < n; j++)
+			boardClone[i][j] = tilted[j]; // boardClone[i]에 tilted를 덮어씀
+	}
+}
+
+int main(void)
+{
+	cin >> n;
+
+	for(int y = 0; y < n; y++)
+		for(int x = 0; x < n; x++)
+			cin >> board[y][x];
+
+	for (int y = 0; y < n; y++)
+		for (int x = 0; x < n; x++)
+			boardClone[y][x] = board[y][x];
+
+	int mx = 0;
+
+	for (int tmp = 0; tmp < 1024; tmp++)	// 4방향에 대해 5번 수행하니 (4^5)
+	{
+		for (int i = 0; i < n; i++)
+			for (int j = 0; j < n; j++)
+				boardClone[i][j] = board[i][j];
+
+		int brute = tmp;
+
+		for (int i = 0; i < 5; i++)
+		{
+			int dir = brute % 4;
+			brute = brute / 4;
+			tilt(dir);
+		}
+
+		for (int i = 0; i < n; i++)
+			for (int j = 0; j < n; j++)
+				mx = max(mx, boardClone[i][j]);
+	}
+
+	cout << mx << "\n";
+
+	return 0;
+}
+*/
+
+/*
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <cmath>
+using namespace std;
+// https://www.acmicpc.net/problem/15686
+int n, m;
+int board[51][51];
+vector <pair<int, int>> chicken;
+vector <pair<int, int>> house;
+
+int main()
+{
+	cin >> n >> m;
+
+	for(int y = 0; y < n; y++)
+		for(int x = 0; x < n; x++)
+			{
+				cin >> board[y][x];
+
+				if (board[y][x] == 1)
+					house.push_back({y, x});
+				
+				if (board[y][x] == 2)
+					chicken.push_back({y, x});
+			}
+
+	vector <int> brute(chicken.size(), 1);
+	for(int i = 0; i < m; i++)
+		brute[i] = 0;
+	
+	int minVal = 9999999;
+
+	do
+	{
+		int dist = 0;
+		for(auto h : house)
+		{
+			int tmp = 9999999;
+			
+			for(int i = 0; i < chicken.size(); i++)
+			{
+				if(brute[i] == 1) continue;
+
+				tmp = min(tmp, abs(h.first - chicken[i].first) + abs(h.second - chicken[i].second));
+			}
+			dist = tmp + dist;
+		}
+		minVal = min(minVal, dist);
+	} while (next_permutation(brute.begin(), brute.end()));
+	
+	cout << minVal << "\n";
+	return 0;
+}
+*/
