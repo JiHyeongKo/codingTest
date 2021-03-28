@@ -16,12 +16,15 @@ void dfs(int num)
     if (num == K - 5)
     {
         int cnt = 0;
+
         for (string es : s)
         {
             bool sw = false;
+            
             for (int i = 0; i < es.size(); i++)
             {
                 char ec = es[i];
+
                 if (chk[ec - 'a'] == false)
                 {
                     sw = 1;
@@ -56,12 +59,11 @@ void dfs(int num)
         v.pop_back();
     }
 }
+
 int main()
 {
-    ios::sync_with_stdio(0);
-    cin.tie(0);
-
-    fill(chk, chk + 26, 0);
+    for(int i = 0; i < 26; i++)
+        chk[i] = 0;
 
     cin >> N >> K;
 
