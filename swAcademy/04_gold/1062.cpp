@@ -1,3 +1,5 @@
+// 아직 푸는중....
+
 #include <iostream>
 using namespace std;
 int n, k, ans = 0;
