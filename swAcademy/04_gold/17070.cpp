@@ -1,47 +1,64 @@
-#include<iostream>
-#include<vector>
+#include <iostream>
+#include <vector>
 using namespace std;
 
-int N, home[17][17], ans=0;
-int dx[] = { 0,1,1 };
-int dy[] = { 1,0,1 };
-vector<int> action[3] = { {0,2}, {1,2}, {0,1,2} };
+int dirX[3] = {0, 1, 1};
+int dirY[3] = {1, 0, 1};
+int n, ans=0;
+int board[17][17];
+int act[3] = {0, 1, 2};
 
 // type 0 : 가로, 1 : 세로, 2 : 대각
-void recur(int x, int y, int type)
+void recur(int x, int y, int act)
 {
-	for (auto &t : action[type])
-	{
-		int tx = x + dx[t];
-		int ty = y + dy[t];
+    int tx = x + dirX[act];
+    int ty = y + dirY[act];
+    
+    if (tx < 1 || ty < 1 || tx > n || ty > n || board[tx][ty])
+        return;
 
-		if (tx < 1 || ty < 1 || tx > N || ty > N || home[tx][ty])
-			continue;
+    if (act == 2 && (board[tx - 1][ty] || board[tx][ty - 1]))
+        return;
 
-		if (t == 2 && (home[tx - 1][ty] || home[tx][ty - 1]))
-			continue;
+    if (tx == n && ty == n)
+    {
+        ++ans;
+        return;
+    }
 
-		if (tx == N && ty == N)
-		{
-			++ans;
-			continue;
-		}
+    if(act == 0)
+    {
+        recur(tx, ty, 0);
+        recur(tx, ty, 2);
+    }
 
-		recur(tx, ty, t);
-	}
+    else if(act == 1)
+    {
+        recur(tx, ty, 1);
+        recur(tx, ty, 2);
+    }
+
+    else
+    {
+        recur(tx, ty, 0);
+        recur(tx, ty, 1);
+        recur(tx, ty, 2);
+    }
+    
 }
 
 int main()
 {
-	cin >> N;
+    cin >> n;
+    for(int i = 1; i <= n; i++)
+        for(int j = 1; j <=n; j++)
+        {
+            cin >> board[i][j];
+        }
 
-	for (int i = 1; i <= N; ++i)
-		for (int j = 1; j <= N; ++j)
-			cin >> home[i][j];
+    if(board[n][n] != 1)
+        recur(1, 1, 0);
 
-	if(!home[N][N]) 
-        recur(1, 2, 0);
-
-	cout << ans;
-	return 0;
+    cout << ans << "\n";
+    return 0;
 }
