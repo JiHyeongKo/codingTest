@@ -1,97 +1,85 @@
 #include <iostream>
-#include <string>
 #include <vector>
-
 using namespace std;
 
-vector<string> s;
-bool chk[26];
-int N, K;
-int maxv = 0;
-vector<int> v;
+int n, k;
+vector <string> s;
+vector <int> v;
+bool visit[26] = {0,};
+int maxv, returnVal;
 
-void dfs(int num)
+void dfs(int maxv)
 {
-    // 5개 제외하고 모두 고를경우
-    if (num == K - 5)
+    if(maxv == k - 5)
     {
         int cnt = 0;
 
-        for (string es : s)
+        for(string es : s)
         {
-            bool sw = false;
-            
-            for (int i = 0; i < es.size(); i++)
-            {
-                char ec = es[i];
+            int fail = 0;
 
-                if (chk[ec - 'a'] == false)
+            for(int i = 0; i < es.size(); i++)
+            {
+                if(visit[es[i] - 'a'] == 0)
                 {
-                    sw = 1;
+                    fail = 1;
                     break;
                 }
             }
-            if (sw == false)
+
+            if(fail == 0)
                 cnt++;
         }
-
-        maxv = max(maxv, cnt);
+        returnVal = max(returnVal, cnt);
 
         return;
     }
 
-    // 알파벳 중복체크 후 추가
-    // 조합이므로 리스트 맨 뒤에서 빼기
-    int lastv = -1;
-    if (!v.empty())
-        lastv = v.back();
+    int rastv = 0;
 
-    for (int i = lastv + 1; i < 26; i++)
+    if(!v.empty())
+        rastv = v.back();
+
+    for(int i = rastv; i < 26; i++)
     {
-        if (chk[i])
+        if(visit[i] == 1)
             continue;
-        chk[i] = 1;
+
+        visit[i] = 1;
         v.push_back(i);
 
-        dfs(num + 1);
+        dfs(maxv+1);
 
-        chk[i] = 0;
+        visit[i] = 0;
         v.pop_back();
     }
 }
 
 int main()
 {
-    for(int i = 0; i < 26; i++)
-        chk[i] = 0;
+    cin >> n >> k;
 
-    cin >> N >> K;
-
-    // 문자열 잘라서 보관
-    for (int i = 0; i < N; i++)
+    for(int i = 0; i < n; i++)
     {
-        string es;
-        cin >> es;
-        // 잘라서 보관
-        s.push_back(es.substr(4, es.size() - 8));
-    }
+        string sBuffer;
+        cin >> sBuffer;
+        s.push_back(sBuffer.substr(4, sBuffer.size() - 8));
+    }    
 
-    chk['a' - 'a'] = 1;
-    chk['n' - 'a'] = 1;
-    chk['t' - 'a'] = 1;
-    chk['i' - 'a'] = 1;
-    chk['c' - 'a'] = 1;
-
-    // 5개 이하일경우 문자열 읽을 수 없음
-    if (K < 5)
+    if(k < 5)
     {
-        cout << 0 << '\n';
+        cout << 0 << "\n";
         return 0;
     }
 
-    dfs(0);
+    visit['a' - 'a'] = 1;
+    visit['n' - 'a'] = 1;
+    visit['t' - 'a'] = 1;
+    visit['i' - 'a'] = 1;
+    visit['c' - 'a'] = 1;
 
-    cout << maxv << '\n';
+    dfs(0);
+    cout << returnVal << "\n";
 
     return 0;
 }
